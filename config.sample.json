@@ -1,0 +1,14 @@
+{
+  "skype": {
+    "username": "",
+    "password": ""
+  },
+  "registrationPath": "skype-registration.yaml",
+  "port": 3000,
+  "bridge": {
+    "homeserverUrl":"https://your.home.server",
+    "domain": "your.home.server",
+    "registration": "skype-registration.yaml"
+  },
+  "SKYPE_USERS_TO_IGNORE": []
+}
