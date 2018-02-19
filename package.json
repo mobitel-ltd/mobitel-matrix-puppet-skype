@@ -1,0 +1,37 @@
+{
+  "name": "matrix-puppet-skype",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "eslint": "eslint",
+    "start": "DEBUG=matrix-puppet:* node index.js",
+    "test": "NODE_ENV=test nyc mocha",
+    "test-report": "NODE_ENV=test nyc --reporter=html mocha"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "concat-stream": "^1.6.0",
+    "debug": "^2.6.8",
+    "html-entities": "^1.2.1",
+    "lodash": "^4.17.4",
+    "matrix-puppet-bridge": "matrix-hacks/matrix-puppet-bridge#d5af7b9",
+    "mime-types": "^2.1.14",
+    "needle": "^1.4.5",
+    "node-fetch": "^1.7.3",
+    "skype-http": "0.0.15",
+    "striptags": "^3.0.1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "eslint": "^4.16.0",
+    "eslint-config-google": "^0.9.1",
+    "eslint-plugin-import": "^2.8.0",
+    "mocha": "^5.0.0",
+    "nock": "^9.1.6",
+    "nyc": "^11.4.1",
+    "proxyquire": "^1.8.0",
+    "sinon": "^4.3.0"
+  }
+}
