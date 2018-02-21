@@ -1,35 +1,21 @@
 const nock = require('nock');
-const chaiHttp = require('chai-http');
-const chai = require('chai');
-const {b2a, a2b, getSkypeMatrixUsers, getRoomName, getIdFromMatrix, getId, getMatrixUsers, getDisplayName, setRoomAlias} = require('../src/utils');
+const {expect} = require('chai');
+const {b2a, a2b, getSkypeMatrixUsers, getRoomName, getIdFromMatrix, getId, getMatrixUsers, getDisplayName} = require('../src/utils');
 const {puppet, bridge} = require('../config.json');
-
-chai.use(chaiHttp);
-const {expect} = chai;
 
 describe('Utils test', () => {
     const sender = '@senderName:mvs';
     const expectedData = 'correct';
     const roomId = '!npBatwRCSuXWushCFs:matrix.bingo-boom.ru';
-    const alias = 'alias';
 
     // eslint-disable-next-line
     before(() => {
-        nock(`${bridge.homeserverUrl}/_matrix/client/r0`)
-            .get(`/profile/${encodeURIComponent(sender)}/displayname`)
+        nock('https://matrix.bingo-boom.ru')
+            .get(`/_matrix/client/r0/profile/${encodeURIComponent(sender)}/displayname`)
             .reply(200, {displayname: expectedData})
-            .get(`/rooms/${roomId}/state/m.room.name`)
+            .get(`/_matrix/client/r0/rooms/${roomId}/state/m.room.name`)
             .query({'access_token': puppet.token})
-            .reply(200, {name: expectedData})
-            .put(`/directory/room/${encodeURIComponent(alias)}`, {'room_id': roomId})
-            .query({'access_token': puppet.token})
-            .reply(200);
-    });
-
-    it('Test setRoomAlias', async () => {
-        const res = await setRoomAlias(roomId, alias);
-        // eslint-disable-next-line
-        expect(res).to.be.undefined;
+            .reply(200, {name: expectedData});
     });
 
     it('Test getId', () => {
