@@ -7,7 +7,7 @@
     "eslint": "eslint",
     "start": "DEBUG=matrix-puppet:* node index.js",
     "test": "NODE_ENV=test nyc mocha",
-    "test-report": "NODE_ENV=test nyc --reporter=html mocha"
+    "test-report": "NODE_ENV=test nyc --reporter=html mocha --exit"
   },
   "dependencies": {
     "bluebird": "^3.5.0",

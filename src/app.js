@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const {MatrixPuppetBridgeBase} = require('matrix-puppet-bridge');
 const SkypeClient = require('./client');
-const config = require('../config.json');
+const config = process.env.NODE_ENV === test ? require('../test/fixtures/config.json') : require('../config.json');
 const debug = require('debug')('matrix-puppet:skype');
 const {skypeify, deskypeify} = require('./skypeify');
 const tmp = require('tmp');
@@ -247,9 +247,10 @@ module.exports = class App extends MatrixPuppetBridgeBase {
     sendMessageAsPuppetToThirdPartyRoomWithId(id, text, {sender}) {
         return getDisplayName(sender)
             .then(displayName => `${displayName}:\n${text}`)
-            .then(textWithSenderName => this.client.sendMessage(b2a(id), {
-                textContent: skypeify(textWithSenderName),
-            }));
+            .then(textWithSenderName =>
+                this.client.sendMessage(b2a(id), {
+                    textContent: skypeify(textWithSenderName),
+                }));
     }
     sendImageMessageAsPuppetToThirdPartyRoomWithId(id, data) {
         /* eslint-disable */

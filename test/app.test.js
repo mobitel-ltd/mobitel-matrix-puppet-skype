@@ -1,17 +1,27 @@
-/* eslint no-unused-expressions: 0 */
+/* eslint {no-unused-expressions: 0, max-nested-callbacks: 0, global-require: 0} */
+const lodash = require('lodash');
 const sinonChai = require('sinon-chai');
 const chai = require('chai');
-const {mock, stub, spy} = require('sinon');
+const {stub} = require('sinon');
 const Datastore = require('nedb');
 const path = require('path');
 const fs = require('fs');
-const App = require('../src/app.js');
-const config = require('./fixtures/config.json');
 const {Puppet} = require('matrix-puppet-bridge');
+const proxyquire = require('proxyquire');
+
+const config = require('./fixtures/config.json');
+const utils = require('../src/utils.js');
+const SkypeClient = require('../src/client.js');
+// const App = require('../src/app.js');
+const getDisplayNameStub = stub(utils, 'getDisplayName');
+const App = proxyquire('../src/app.js', {
+    'utils': {getDisplayName: getDisplayNameStub},
+    // SkypeClient: {'prototype.connect': () => ({})},
+});
 const debug = require('debug')('test');
+
 const TEST_USER_DB_PATH = path.resolve(__dirname, 'fixtures', 'test-users.db');
 const TEST_ROOM_DB_PATH = path.resolve(__dirname, 'fixtures', 'test-rooms.db');
-const lodash = require('lodash');
 
 const {expect} = chai;
 chai.use(sinonChai);
@@ -144,6 +154,8 @@ describe('App testing', () => {
         const spyMember = stub(app, 'handleMatrixMemberEvent').callsFake(data => {
             result = data;
         });
+        getDisplayNameStub.callsFake(sender => new Promise((res, rej) => res(`${sender}DisplayName`)));
+        stub(SkypeClient.prototype, 'connect').callsFake(() => ({}));
 
         const event = {
             'content': {
@@ -160,6 +172,7 @@ describe('App testing', () => {
             return req.resolve(app.handleMatrixEvent(req));
         });
         await puppet.startClient();
+        await app.initThirdPartyClient();
         await app.bridge.run(8090, puppet, appService);
         await appService.emit('event', event);
         expect(spyOnEvent).to.have.been.called;
