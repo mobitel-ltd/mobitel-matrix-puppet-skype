@@ -7,7 +7,7 @@ const Datastore = require('nedb');
 const path = require('path');
 const fs = require('fs');
 const {Puppet} = require('matrix-puppet-bridge');
-const proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire').noCallThru();
 
 const config = require('./fixtures/config.json');
 const utils = require('../src/utils.js');
@@ -156,6 +156,7 @@ describe('App testing', () => {
         });
         getDisplayNameStub.callsFake(sender => new Promise((res, rej) => res(`${sender}DisplayName`)));
         stub(SkypeClient.prototype, 'connect').callsFake(() => ({}));
+        const skypeClientSendMessageStub = stub(SkypeClient.prototype, 'sendMessage').callsFake(arg => ({}));
 
         const event = {
             'content': {
@@ -176,8 +177,16 @@ describe('App testing', () => {
         await app.bridge.run(8090, puppet, appService);
         await appService.emit('event', event);
         expect(spyOnEvent).to.have.been.called;
-        expect(spyMember).to.have.been.called;
-        // expect(app.handleMatrixMemberEvent).to.have.been.called;
+        // expect(spyMember).to.have.been.called;
+        expect(getDisplayNameStub).to.have.been.called;
+        expect(skypeClientSendMessageStub).to.have.been.called;
+        expect(skypeClientSendMessageStub).to.have.been.calledOnce;
         expect(result).to.deep.equal(event);
+        // getDisplayNameStub.restore();
+    });
+
+    after(() => {
+        proxyquire.callThru();
+        getDisplayNameStub.restore();
     });
 });

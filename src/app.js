@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const {MatrixPuppetBridgeBase} = require('matrix-puppet-bridge');
 const SkypeClient = require('./client');
-const config = process.env.NODE_ENV === test ? require('../test/fixtures/config.json') : require('../config.json');
+const config = process.env.NODE_ENV === 'test' ? require('../test/fixtures/config.json') : require('../config.json');
 const debug = require('debug')('matrix-puppet:skype');
 const {skypeify, deskypeify} = require('./skypeify');
 const tmp = require('tmp');

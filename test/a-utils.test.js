@@ -1,7 +1,7 @@
 const nock = require('nock');
 const {expect} = require('chai');
 const {b2a, a2b, getSkypeMatrixUsers, getRoomName, getIdFromMatrix, getId, getMatrixUsers, getDisplayName} = require('../src/utils');
-const {puppet, bridge} = require('../config.json');
+const {puppet, bridge} = require('./fixtures/config.json');
 
 describe('Utils test', () => {
     const sender = '@senderName:mvs';
@@ -10,7 +10,7 @@ describe('Utils test', () => {
 
     // eslint-disable-next-line
     before(() => {
-        nock('https://matrix.bingo-boom.ru')
+        nock(bridge.homeserverUrl)
             .get(`/_matrix/client/r0/profile/${encodeURIComponent(sender)}/displayname`)
             .reply(200, {displayname: expectedData})
             .get(`/_matrix/client/r0/rooms/${roomId}/state/m.room.name`)
@@ -41,8 +41,8 @@ describe('Utils test', () => {
             'a:b:c',
             'a:b',
             'a',
-            '8:live:skypebottest_2',
-            '8:live:skypebot_26',
+            '8:live:ignore_1',
+            '8:live:ignore_2',
         ];
         const expected = [
             `@c:${bridge.domain}`,
@@ -54,8 +54,9 @@ describe('Utils test', () => {
         expect(result).deep.equal(expected);
     });
 
-    it('Room should be created', async () => {
+    it('Get coorrect display name', async () => {
         const result = await getDisplayName(sender);
+        console.log(result);
         expect(result).to.equal(expectedData);
     });
 
