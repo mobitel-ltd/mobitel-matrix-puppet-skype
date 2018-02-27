@@ -1,4 +1,4 @@
-# JIRA to Matrix bot
+# Matrix/skype bot
 
 Бот (web-service), который:
 
