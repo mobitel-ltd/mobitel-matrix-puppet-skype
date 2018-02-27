@@ -56,7 +56,6 @@ describe('Utils test', () => {
 
     it('Get coorrect display name', async () => {
         const result = await getDisplayName(sender);
-        console.log(result);
         expect(result).to.equal(expectedData);
     });
 

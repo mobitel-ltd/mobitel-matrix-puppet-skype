@@ -10,15 +10,13 @@ const {Puppet} = require('matrix-puppet-bridge');
 const proxyquire = require('proxyquire').noCallThru();
 
 const config = require('./fixtures/config.json');
+
 const utils = require('../src/utils.js');
 const SkypeClient = require('../src/client.js');
-// const App = require('../src/app.js');
 const getDisplayNameStub = stub(utils, 'getDisplayName');
 const App = proxyquire('../src/app.js', {
     'utils': {getDisplayName: getDisplayNameStub},
-    // SkypeClient: {'prototype.connect': () => ({})},
 });
-const debug = require('debug')('test');
 
 const TEST_USER_DB_PATH = path.resolve(__dirname, 'fixtures', 'test-users.db');
 const TEST_ROOM_DB_PATH = path.resolve(__dirname, 'fixtures', 'test-rooms.db');
@@ -141,22 +139,14 @@ describe('App testing', () => {
         expect(app).to.be.ok;
     });
 
-    it('Test getting event to port 8090 from matrix', async () => {
+    it('Skype client should send message after getting message event from matrix', async () => {
         let result;
-        // stub(App.prototype, 'handleMatrixEvent').callsFake({
-        //     result = req.data;
-        //     return req.resolve();
-        // });
         const {controller} = app.bridge.opts;
         controller.thirdPartyLookup = null;
 
-        debug('app %O', app);
-        const spyMember = stub(app, 'handleMatrixMemberEvent').callsFake(data => {
-            result = data;
-        });
         getDisplayNameStub.callsFake(sender => new Promise((res, rej) => res(`${sender}DisplayName`)));
         stub(SkypeClient.prototype, 'connect').callsFake(() => ({}));
-        const skypeClientSendMessageStub = stub(SkypeClient.prototype, 'sendMessage').callsFake(arg => ({}));
+        const skypeClientSendMessageStub = stub(SkypeClient.prototype, 'sendMessage').callsFake(() => ({}));
 
         const event = {
             'content': {
@@ -177,16 +167,13 @@ describe('App testing', () => {
         await app.bridge.run(8090, puppet, appService);
         await appService.emit('event', event);
         expect(spyOnEvent).to.have.been.called;
-        // expect(spyMember).to.have.been.called;
-        expect(getDisplayNameStub).to.have.been.called;
-        expect(skypeClientSendMessageStub).to.have.been.called;
-        expect(skypeClientSendMessageStub).to.have.been.calledOnce;
         expect(result).to.deep.equal(event);
-        // getDisplayNameStub.restore();
+        expect(getDisplayNameStub).to.have.been.called;
+        const expectedId = utils.b2a('alias_name');
+        expect(skypeClientSendMessageStub).to.have.been.calledWith(expectedId);
     });
 
     after(() => {
-        proxyquire.callThru();
         getDisplayNameStub.restore();
     });
 });
