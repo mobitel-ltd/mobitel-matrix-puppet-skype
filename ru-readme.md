@@ -1,4 +1,4 @@
-# Matrix/skype bot
+# Matrix/skype appservice
 
 Бот (web-service), который:
 
