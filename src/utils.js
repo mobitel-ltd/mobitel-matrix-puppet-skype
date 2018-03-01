@@ -9,7 +9,7 @@ const debug = require('debug')('utils');
 
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
-const {bridge, puppet, SKYPE_USERS_TO_IGNORE} = require('../config.json');
+const {bridge, puppet, SKYPE_USERS_TO_IGNORE} = process.env.NODE_ENV === 'test' ? require('../test/fixtures/config.json') : require('../config.json');
 
 const a2b = str => new Buffer(str).toString('base64');
 const b2a = str => new Buffer(str, 'base64').toString('ascii');
