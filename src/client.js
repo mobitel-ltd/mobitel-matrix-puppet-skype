@@ -1,6 +1,6 @@
 const skypeHttp = require('skype-http');
 const debug = require('debug')('matrix-puppet:skype:client');
-const {skype} = require('../config.json');
+const {skype} = process.env.NODE_ENV === 'test' ? require('../test/fixtures/config.json') : require('../config.json');
 // look at
 // https://github.com/ocilo/skype-http/blob/master/src/example/main.ts
 const EventEmitter = require('events');

@@ -4,11 +4,16 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "eslint": "eslint",
+    "lint": "eslint .",
     "start": "DEBUG=matrix-puppet:* node index.js",
     "test": "NODE_ENV=test nyc mocha --exit",
-    "test-report": "NODE_ENV=test nyc --reporter=html mocha --exit"
+    "test-report": "NODE_ENV=test nyc --reporter=html mocha --exit",
+    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
   "dependencies": {
     "bluebird": "^3.5.0",
     "concat-stream": "^1.6.0",
@@ -32,6 +37,7 @@
     "nedb": "^1.8.0",
     "nock": "^9.1.6",
     "nyc": "^11.4.1",
+    "pre-commit": "^1.2.2",
     "proxyquire": "^1.8.0",
     "sinon": "^4.3.0",
     "sinon-chai": "^2.14.0"

@@ -1,0 +1,22 @@
+{
+    "skype": {
+      "username": "USERNAME",
+      "password": "PASSWORD"
+    },
+    "registrationPath": "test/fixtures/skype-registration.yaml",
+    "port": 8090,
+    "bridge": {
+      "homeserverUrl": "https://matrix.example.com",
+      "domain": "matrix.domain.ru",
+      "registration": "test/fixtures/skype-registration.yaml"
+    },
+    "SKYPE_USERS_TO_IGNORE": [
+        "8:live:ignore_1",
+        "8:live:ignore_2"
+    ],
+    "puppet": {
+      "id": "@skype_:matrix.domain.ru",
+      "localpart": "skype_",
+      "token": "token"
+    }
+}

@@ -1,0 +1,13 @@
+id: 1a2b3c
+hs_token: hstoken1
+as_token: astoken1
+namespaces:
+  users:
+    - exclusive: true
+      regex: '@skype_.*'
+  aliases: []
+  rooms: []
+url: 'http://10.23.0.39:8090'
+sender_localpart: skypebot
+rate_limited: true
+protocols: null

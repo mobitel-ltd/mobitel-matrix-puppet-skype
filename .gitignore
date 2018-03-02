@@ -17,8 +17,8 @@
 *_dev*
 *.development.*
 *_development*
-config.json
-*.yaml
+/config.json
+/*.yaml
 *.db
 /data
 /*.sqlite
