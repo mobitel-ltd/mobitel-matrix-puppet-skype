@@ -101,7 +101,7 @@ const getId = (user, func) => {
     return user.includes(prefix) ? func(getIdFromMatrix(user, prefix)) : `8:live:${getIdFromMatrix(user)}`;
 };
 
-const getSkypeMatrixUsers = (skypeCollection, matrixRoomUsers) => {
+const getSkypeMatrixUsers = (skypeCollection = [], matrixRoomUsers) => {
     const usersIds = matrixRoomUsers.map(user => getId(user, b2a));
     return skypeCollection
         .map(({personId}) => personId)
