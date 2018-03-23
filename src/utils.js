@@ -30,17 +30,23 @@ const setRoomAlias = (roomId, alias) => {
         });
 };
 
-const getDisplayName = sender => {
-    const encodeSender = encodeURIComponent(sender);
+const getDisplayName = matrixId => {
+    const encodeSender = encodeURIComponent(matrixId);
     const url = `${URL_BASE}/profile/${encodeSender}/displayname`;
     return fetch(url)
-        .then(res => res.json())
-        .then(({displayname}) => {
+        .then(body =>
+            (body.status === 200 ? body.json() : null))
+        .then(res =>
+            (res ? res.displayname : res));
+};
+
+const getNameToSkype = sender =>
+    getDisplayName(sender)
+        .then(displayname => {
             const result = displayname || sender;
             debug('Display name for user %s in skype is %s', sender, result);
             return result;
         });
-};
 
 const getRoomName = roomId => {
     const query = querystring.stringify({'access_token': puppet.token});
@@ -109,13 +115,14 @@ const getSkypeMatrixUsers = (skypeCollection = [], matrixRoomUsers) => {
 };
 
 module.exports = {
+    getDisplayName,
     a2b,
     b2a,
     getSkypeMatrixUsers,
     getIdFromMatrix,
     getId,
     getMatrixUsers,
-    getDisplayName,
+    getNameToSkype,
     getRoomName,
     setRoomAlias,
     download: {

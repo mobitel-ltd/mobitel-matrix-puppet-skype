@@ -13,12 +13,12 @@ const config = require('./fixtures/config.json');
 const {Puppet} = require('matrix-puppet-bridge');
 const utils = require('../src/utils.js');
 const SkypeClient = require('../src/client.js');
-const getDisplayNameStub = stub(utils, 'getDisplayName');
+const getNameToSkypeStub = stub(utils, 'getNameToSkype');
 const setRoomAliasStub = stub(utils, 'setRoomAlias');
 const getRoomNameStub = stub(utils, 'getRoomName');
 const App = proxyquire('../src/app.js', {
     utils: {
-        getDisplayName: getDisplayNameStub,
+        getNameToSkype: getNameToSkypeStub,
         setRoomAlias: setRoomAliasStub,
         getRoomName: getRoomNameStub,
     },
@@ -200,7 +200,7 @@ describe('App testing', () => {
     });
 
     it('Skype client should send message after getting message event from matrix', async () => {
-        getDisplayNameStub.callsFake(sender => new Promise((res, rej) => res(`${sender}DisplayName`)));
+        getNameToSkypeStub.callsFake(sender => new Promise((res, rej) => res(`${sender}DisplayName`)));
         const skypeClientSendMessageStub = stub(SkypeClient.prototype, 'sendMessage').callsFake(() => ({}));
 
         const event = {
@@ -218,7 +218,7 @@ describe('App testing', () => {
         await app.bridge.run(8090, puppet, appService);
         await appService.emit('event', event);
         expect(spyOnEvent).to.have.been.called;
-        expect(getDisplayNameStub).to.have.been.called;
+        expect(getNameToSkypeStub).to.have.been.called;
         const expectedId = utils.b2a('alias_name');
         expect(skypeClientSendMessageStub).to.have.been.calledWith(expectedId);
     });
@@ -260,6 +260,6 @@ describe('App testing', () => {
     });
 
     after(() => {
-        getDisplayNameStub.restore();
+        getNameToSkypeStub.restore();
     });
 });

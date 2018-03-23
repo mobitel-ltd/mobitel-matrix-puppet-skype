@@ -1,6 +1,6 @@
 const nock = require('nock');
 const {expect} = require('chai');
-const {b2a, a2b, getSkypeMatrixUsers, getRoomName, getIdFromMatrix, getId, getMatrixUsers, getDisplayName} = require('../src/utils');
+const {getDisplayName, b2a, a2b, getSkypeMatrixUsers, getRoomName, getIdFromMatrix, getId, getMatrixUsers, getNameToSkype} = require('../src/utils');
 const {puppet, bridge} = require('./fixtures/config.json');
 
 describe('Utils test', () => {
@@ -12,10 +12,16 @@ describe('Utils test', () => {
     before(() => {
         nock(bridge.homeserverUrl)
             .get(`/_matrix/client/r0/profile/${encodeURIComponent(sender)}/displayname`)
+            .times(2)
             .reply(200, {displayname: expectedData})
             .get(`/_matrix/client/r0/rooms/${roomId}/state/m.room.name`)
             .query({'access_token': puppet.token})
             .reply(200, {name: expectedData});
+    });
+
+    it('Test correct getDisplayName', async () => {
+        const result = await getDisplayName(sender);
+        expect(result).to.equal(expectedData);
     });
 
     it('Test getId', () => {
@@ -55,7 +61,7 @@ describe('Utils test', () => {
     });
 
     it('Get coorrect display name', async () => {
-        const result = await getDisplayName(sender);
+        const result = await getNameToSkype(sender);
         expect(result).to.equal(expectedData);
     });
 

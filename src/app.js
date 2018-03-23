@@ -6,7 +6,7 @@ const debug = require('debug')('matrix-puppet:skype');
 const {skypeify, deskypeify} = require('./skypeify');
 const tmp = require('tmp');
 const fs = require('fs');
-const {a2b, b2a, setRoomAlias, getSkypeMatrixUsers, getMatrixUsers, getDisplayName, getRoomName, download, entities} = require('./utils');
+const {getDisplayName, a2b, b2a, setRoomAlias, getSkypeMatrixUsers, getMatrixUsers, getNameToSkype, getRoomName, download, entities} = require('./utils');
 
 module.exports = class App extends MatrixPuppetBridgeBase {
     getServicePrefix() {
@@ -92,15 +92,24 @@ module.exports = class App extends MatrixPuppetBridgeBase {
             .then(matrixRoomId => {
                 const roomMembers = this.puppet.getMatrixRoomMembers(matrixRoomId);
                 const filteredUsers = matrixMembers.filter(user => !roomMembers.includes(user));
+                const inviteSkypeUserToMatrixRoom = user =>
+                    getDisplayName(user)
+                        .then(name => {
+                            if (name) {
+                                debug('New user %s invited to room: %s', name, roomId);
+                                return this.puppet.client.invite(matrixRoomId, user);
+                            }
+                        })
+                        .catch(err => console.error(err));
+
                 if (filteredUsers.length === 0) {
                     debug('All members in skype conversation are already joined in Matrix room: ', matrixRoomId);
                 } else {
-                    return Promise.all(filteredUsers.map(user => this.puppet.client.invite(matrixRoomId, user)))
-                        .then(() => debug('New users invited to room: ', roomId));
+                    return Promise.all(filteredUsers.map(inviteSkypeUserToMatrixRoom));
                 }
-            })
-            .catch(err => console.error(err));
+            });
     }
+
 
     getThirdPartyUserDataByIdNoPromise(thirdPartySender) {
         const contact = this.client.getContact(thirdPartySender);
@@ -245,7 +254,7 @@ module.exports = class App extends MatrixPuppetBridgeBase {
         // no-op for now
     }
     sendMessageAsPuppetToThirdPartyRoomWithId(id, text, {sender}) {
-        return getDisplayName(sender)
+        return getNameToSkype(sender)
             .then(displayName => `${displayName}:\n${text}`)
             .then(textWithSenderName =>
                 this.client.sendMessage(b2a(id), {
